@@ -1,0 +1,2 @@
+export const fieldControlClassName =
+  'w-full rounded-md border border-[#eadbd0] bg-white px-3 py-2 text-sm text-[#514238] shadow-sm outline-none transition placeholder:text-[#a38b7c] focus:border-[#bf7d5d] focus:ring-2 focus:ring-[#bf7d5d]/15 disabled:cursor-not-allowed disabled:bg-[#f7f1eb] disabled:text-[#9b887c]';
