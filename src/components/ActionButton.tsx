@@ -25,7 +25,7 @@ export function ActionButton({ action, onClick, label, disabled = false }: Actio
       title={label ?? details.label}
       disabled={disabled}
       onClick={onClick}
-      className={`grid size-7 place-items-center rounded-md border border-[#f0e1d7] bg-[#fbf3ed] text-[#a96545] transition-colors hover:bg-[#f3e3d8] disabled:cursor-not-allowed disabled:opacity-50 ${action === 'delete' ? 'hover:text-[#a84d39]' : ''}`}
+      className={`grid size-7 place-items-center rounded-md border border-[#BA867B]/30 bg-[#F5ECE9] text-[#BA867B] transition-colors hover:bg-[#F5ECE9] disabled:cursor-not-allowed disabled:opacity-50 ${action === 'delete' ? 'hover:text-[#a84d39]' : ''}`}
     >
       <Icon name={details.icon} className="size-3.5" />
     </button>

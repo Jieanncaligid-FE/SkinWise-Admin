@@ -1,33 +1,51 @@
-import { apiDelete, apiGet, apiPost, apiPut } from '../api/client';
-import type { Ingredient, IngredientDraft } from '../types/ingredient';
-import type { ResourceCountResponse } from '../types/dashboard';
+import { ApiError, apiGet, apiPatch, apiPost } from '../api/client';
+import type {
+	AdminIngredientDetail,
+	AdminIngredientDraft,
+	AdminIngredientListResponse,
+	FieldErrors,
+} from '../types/ingredient';
 
-export async function getIngredients(signal?: AbortSignal): Promise<Ingredient[]> {
-	const ingredients = await apiGet<Ingredient[]>('/ingredients', signal);
-	if (!Array.isArray(ingredients)) {
-		throw new Error('The ingredients response is invalid.');
+export function getIngredients(signal?: AbortSignal): Promise<AdminIngredientListResponse> {
+	return apiGet<AdminIngredientListResponse>('/api/admin/ingredients', signal);
+}
+
+export function getIngredient(id: number, signal?: AbortSignal): Promise<AdminIngredientDetail> {
+	return apiGet<AdminIngredientDetail>(`/api/admin/ingredients/${encodeURIComponent(String(id))}`, signal);
+}
+
+export function createIngredient(draft: AdminIngredientDraft): Promise<AdminIngredientDetail> {
+	return apiPost<AdminIngredientDetail>('/api/admin/ingredients', draft);
+}
+
+export function updateIngredient(
+	id: number,
+	draft: Omit<AdminIngredientDraft, 'name'>,
+): Promise<AdminIngredientDetail> {
+	return apiPatch<AdminIngredientDetail>(`/api/admin/ingredients/${encodeURIComponent(String(id))}`, draft);
+}
+
+/** Extract per-field server errors from a 400 response, if present. */
+export function getFieldErrors(cause: unknown): FieldErrors | null {
+	if (!(cause instanceof ApiError) || cause.status !== 400) return null;
+	if (typeof cause.body !== 'object' || cause.body === null) return null;
+	const errors = (cause.body as { errors?: unknown }).errors;
+	if (!Array.isArray(errors)) return null;
+	const fields: FieldErrors = {};
+	for (const entry of errors) {
+		if (typeof entry !== 'object' || entry === null) continue;
+		const { field, message } = entry as { field?: unknown; message?: unknown };
+		if (typeof field === 'string' && typeof message === 'string' && !(field in fields)) {
+			fields[field] = message;
+		}
 	}
-
-	return ingredients;
+	return fields;
 }
 
-export function createIngredient(ingredient: IngredientDraft): Promise<Ingredient> {
-	return apiPost<Ingredient>('/ingredients', ingredient);
-}
-
-export function updateIngredient(id: string, ingredient: IngredientDraft): Promise<Ingredient> {
-	return apiPut<Ingredient>(`/ingredients/${encodeURIComponent(id)}`, ingredient);
-}
-
-export function deleteIngredient(id: string): Promise<void> {
-	return apiDelete(`/ingredients/${encodeURIComponent(id)}`);
-}
-
-export async function getIngredientCount(signal?: AbortSignal): Promise<number> {
-	const response = await apiGet<ResourceCountResponse>('/ingredients/count', signal);
-	if (!Number.isSafeInteger(response.count) || response.count < 0) {
-		throw new Error('The ingredient count response is invalid.');
-	}
-
-	return response.count;
+/** Extract the server message from a 409 duplicate response, if present. */
+export function getConflictMessage(cause: unknown): string | null {
+	if (!(cause instanceof ApiError) || cause.status !== 409) return null;
+	if (typeof cause.body !== 'object' || cause.body === null) return null;
+	const message = (cause.body as { message?: unknown }).message;
+	return typeof message === 'string' && message ? message : 'Name or alias already in use.';
 }

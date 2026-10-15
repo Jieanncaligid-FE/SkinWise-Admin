@@ -6,7 +6,7 @@ interface StatusBadgeProps {
 const variantClassName = {
   positive: 'bg-[#e8f1e9] text-[#52745a]',
   negative: 'bg-[#f9e8df] text-[#a85e43]',
-  neutral: 'bg-[#f2ece6] text-[#806e61]',
+  neutral: 'bg-[#F5ECE9] text-[#1E0C08]/60',
 };
 
 export function StatusBadge({ label, variant }: StatusBadgeProps) {

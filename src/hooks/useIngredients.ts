@@ -1,27 +1,91 @@
-import { useEffect, useState } from 'react';
-import { isApiConfigured } from '../api/client';
-import {
-	createIngredient as createIngredientRequest,
-	deleteIngredient as deleteIngredientRequest,
-	getIngredients,
-	updateIngredient as updateIngredientRequest,
-} from '../services/ingredients';
-import type { Ingredient, IngredientDraft } from '../types/ingredient';
+import { useCallback, useEffect, useState } from 'react';
+import { ApiError, isApiConfigured } from '../api/client';
+import { getIngredient, getIngredients } from '../services/ingredients';
+import type { AdminIngredientDetail, AdminIngredientListResponse } from '../types/ingredient';
 
 export function useIngredients() {
-	const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+	const [data, setData] = useState<AdminIngredientListResponse | null>(null);
 	const [isLoading, setIsLoading] = useState(isApiConfigured);
 	const [error, setError] = useState<string | null>(null);
+	const [reloadCount, setReloadCount] = useState(0);
+
+	const refresh = useCallback(() => {
+		setIsLoading(true);
+		setError(null);
+		setReloadCount((count) => count + 1);
+	}, []);
 
 	useEffect(() => {
 		if (!isApiConfigured) return;
 
 		const controller = new AbortController();
 		getIngredients(controller.signal)
-			.then((result) => setIngredients(result))
-			.catch((cause: unknown) => {
+			.then((result) => {
 				if (!controller.signal.aborted) {
-					setError(cause instanceof Error ? cause.message : 'Unable to load ingredients.');
+					setData(result);
+					setError(null);
+				}
+			})
+			.catch((cause: unknown) => {
+				if (controller.signal.aborted) return;
+				setError(mapListError(cause));
+			})
+			.finally(() => {
+				if (!controller.signal.aborted) setIsLoading(false);
+			});
+
+		return () => controller.abort();
+	}, [reloadCount]);
+
+	return { data, isLoading, error, refresh };
+}
+
+function mapListError(cause: unknown): string {
+	if (cause instanceof ApiError && cause.status === 429) {
+		return 'Too many requests. Try again later.';
+	}
+	if (cause instanceof ApiError && cause.status === 401) {
+		// The shared 401 handler already sends the user to login.
+		return 'Your session expired. Please log in again.';
+	}
+	if (cause instanceof ApiError && cause.status === 403) {
+		return 'This action is not allowed.';
+	}
+	return cause instanceof Error ? cause.message : 'Unable to load ingredients.';
+}
+
+export function useIngredientDetail(id: number | null) {
+	const [detail, setDetail] = useState<AdminIngredientDetail | null>(null);
+	const [isLoading, setIsLoading] = useState(isApiConfigured && id !== null);
+	const [error, setError] = useState<string | null>(null);
+	const [notFound, setNotFound] = useState(false);
+	const [reloadCount, setReloadCount] = useState(0);
+
+	const retry = useCallback(() => {
+		setIsLoading(true);
+		setError(null);
+		setNotFound(false);
+		setReloadCount((count) => count + 1);
+	}, []);
+
+	useEffect(() => {
+		if (!isApiConfigured || id === null) return;
+
+		const controller = new AbortController();
+		getIngredient(id, controller.signal)
+			.then((result) => {
+				if (!controller.signal.aborted) {
+					setDetail(result);
+					setError(null);
+					setNotFound(false);
+				}
+			})
+			.catch((cause: unknown) => {
+				if (controller.signal.aborted) return;
+				if (cause instanceof ApiError && cause.status === 404) {
+					setNotFound(true);
+				} else {
+					setError(mapListError(cause));
 				}
 			})
 			.finally(() => {
@@ -29,27 +93,7 @@ export function useIngredients() {
 			});
 
 		return () => controller.abort();
-	}, []);
+	}, [id, reloadCount]);
 
-	const create = async (draft: IngredientDraft) => {
-		const created = await createIngredientRequest(draft);
-		setIngredients((current) => [created, ...current]);
-		setError(null);
-		return created;
-	};
-
-	const update = async (id: string, draft: IngredientDraft) => {
-		const updated = await updateIngredientRequest(id, draft);
-		setIngredients((current) => current.map((ingredient) => ingredient.id === id ? updated : ingredient));
-		setError(null);
-		return updated;
-	};
-
-	const remove = async (id: string) => {
-		await deleteIngredientRequest(id);
-		setIngredients((current) => current.filter((ingredient) => ingredient.id !== id));
-		setError(null);
-	};
-
-	return { ingredients, isLoading, error, create, update, remove };
+	return { detail, isLoading, error, notFound, retry };
 }

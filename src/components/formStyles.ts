@@ -1,2 +1,2 @@
 export const fieldControlClassName =
-  'w-full rounded-md border border-[#eadbd0] bg-white px-3 py-2 text-sm text-[#514238] shadow-sm outline-none transition placeholder:text-[#a38b7c] focus:border-[#bf7d5d] focus:ring-2 focus:ring-[#bf7d5d]/15 disabled:cursor-not-allowed disabled:bg-[#f7f1eb] disabled:text-[#9b887c]';
+  'w-full rounded-md border border-[#BA867B]/30 bg-white px-3 py-2 text-sm text-[#1E0C08] shadow-sm outline-none transition placeholder:text-[#1E0C08]/60 focus:border-[#BA867B] focus:ring-2 focus:ring-[#BA867B]/15 disabled:cursor-not-allowed disabled:bg-[#F5ECE9] disabled:text-[#1E0C08]/60';

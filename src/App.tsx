@@ -7,9 +7,17 @@ import ProtectedRoute from './auth/ProtectedRoute';
 import { useAuth } from './auth/context';
 
 function App() {
-	const { isAuthenticated } = useAuth();
+	const { isAuthenticated, status } = useAuth();
   const path = window.location.pathname;
   const userDetailsMatch = path.match(/^\/users\/([^/]+)$/);
+
+  if (status === 'checking') {
+    return (
+      <main className="grid min-h-screen place-items-center bg-[#FAF5F4] px-4">
+        <p role="status" className="text-[12px] text-[#1E0C08]/60">Checking your session…</p>
+      </main>
+    );
+  }
 
   if (path === '/login') return isAuthenticated ? <Dashboard /> : <Login />;
 

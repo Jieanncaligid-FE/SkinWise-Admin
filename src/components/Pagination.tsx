@@ -31,7 +31,7 @@ export function Pagination({
 				aria-label="Previous page"
 				disabled={currentPage <= 1}
 				onClick={() => onPageChange(Math.max(1, currentPage - 1))}
-				className={`${buttonClass} border-[#eadbd0] bg-white text-[#806e61] hover:bg-[#f7eee7]`}
+				className={`${buttonClass} border-[#BA867B]/30 bg-white text-[#1E0C08]/60 hover:bg-[#F5ECE9]`}
 			>
 				<Icon name="chevron-left" className="size-3.5" />
 			</button>
@@ -44,8 +44,8 @@ export function Pagination({
 					onClick={() => onPageChange(page)}
 					className={`${buttonClass} ${
 						page === currentPage
-							? 'border-[#bd7c5b] bg-[#bd7c5b] font-medium text-white'
-							: 'border-[#eadbd0] bg-white text-[#806e61] hover:bg-[#f7eee7]'
+							? 'border-[#BA867B] bg-[#BA867B] font-medium text-white'
+							: 'border-[#BA867B]/30 bg-white text-[#1E0C08]/60 hover:bg-[#F5ECE9]'
 					}`}
 				>
 					{page}
@@ -56,7 +56,7 @@ export function Pagination({
 				aria-label="Next page"
 				disabled={currentPage >= safePageCount}
 				onClick={() => onPageChange(Math.min(safePageCount, currentPage + 1))}
-				className={`${buttonClass} border-[#eadbd0] bg-white text-[#806e61] hover:bg-[#f7eee7]`}
+				className={`${buttonClass} border-[#BA867B]/30 bg-white text-[#1E0C08]/60 hover:bg-[#F5ECE9]`}
 			>
 				<Icon name="chevron-right" className="size-3.5" />
 			</button>
