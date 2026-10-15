@@ -16,7 +16,7 @@ export function SelectInput({ options, placeholder, className = '', ...props }: 
           <option key={option.value} value={option.value}>{option.label}</option>
         ))}
       </select>
-      <Icon name="chevron-down" className="pointer-events-none absolute right-3 top-1/2 size-3.5 -translate-y-1/2 text-[#806e61]" />
+      <Icon name="chevron-down" className="pointer-events-none absolute right-3 top-1/2 size-3.5 -translate-y-1/2 text-[#1E0C08]/60" />
     </span>
   );
 }

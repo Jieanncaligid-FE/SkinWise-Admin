@@ -32,14 +32,14 @@ export function TagInput({ value, onChange, className = '', onKeyDown, disabled,
   return (
     <div className={`${fieldControlClassName} flex min-h-10 flex-wrap items-center gap-1.5 px-2.5 ${disabled ? 'opacity-70' : ''} ${className}`}>
       {value.map((tag, index) => (
-        <span key={`${tag}-${index}`} className="inline-flex items-center gap-1 rounded-full bg-[#f3e3d8] px-2 py-1 text-[10px] text-[#725442]">
+        <span key={`${tag}-${index}`} className="inline-flex items-center gap-1 rounded-full bg-[#F5ECE9] px-2 py-1 text-[10px] text-[#1E0C08]">
           {tag}
           <button
             type="button"
             aria-label={`Remove ${tag}`}
             disabled={disabled}
             onClick={() => onChange(value.filter((_, tagIndex) => tagIndex !== index))}
-            className="text-[#9b684f] hover:text-[#653d2f] disabled:cursor-not-allowed"
+            className="text-[#BA867B] hover:text-[#1E0C08] disabled:cursor-not-allowed"
           >
             <Icon name="close" className="size-3" />
           </button>
@@ -52,7 +52,7 @@ export function TagInput({ value, onChange, className = '', onKeyDown, disabled,
         onChange={(event) => setDraft(event.target.value)}
         onKeyDown={handleKeyDown}
         onBlur={addDraft}
-        className="min-w-24 flex-1 bg-transparent py-1 text-sm text-[#514238] outline-none placeholder:text-[#a38b7c]"
+        className="min-w-24 flex-1 bg-transparent py-1 text-sm text-[#1E0C08] outline-none placeholder:text-[#1E0C08]/60"
       />
     </div>
   );

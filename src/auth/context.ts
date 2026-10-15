@@ -1,13 +1,23 @@
 import { createContext, useContext } from 'react';
 
+export interface AdminUser {
+	id: number;
+	email: string;
+	name: string;
+}
+
+export type AuthStatus = 'checking' | 'authenticated' | 'anonymous';
+
 interface AuthContextValue {
+	/** The signed-in admin. Kept in memory only, never in storage. */
+	admin: AdminUser | null;
+	status: AuthStatus;
 	isAuthenticated: boolean;
-	login: (email: string, password: string, rememberMe: boolean) => boolean;
-	logout: () => void;
+	login: (email: string, password: string) => Promise<AdminUser>;
+	logout: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextValue | null>(null);
-export const authStorageKey = 'skinwise-admin-authenticated';
 
 export function useAuth() {
 	const context = useContext(AuthContext);
